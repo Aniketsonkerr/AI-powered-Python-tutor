@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
+import { appContext } from "../utils/appContent";
 import { FaRobot, FaHatWizard } from "react-icons/fa";
 import { GiDinosaurRex } from "react-icons/gi";
 
@@ -10,10 +11,11 @@ const characterIcons = {
 };
 
 const TutorChat = () => {
+  const { character, setCharacter } = useContext(appContext);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [character, setCharacter] = useState("robot");
   const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleSendMessage = async () => {
     if (!input.trim()) return;
@@ -40,22 +42,16 @@ const TutorChat = () => {
 
   return (
     <div className="max-w-lg mx-auto p-4 bg-gray-100 shadow-md rounded-lg">
-      {/* Character Selection */}
-      <div className="mb-4 flex items-center gap-2">
-        <label className="font-bold text-lg">Choose your AI tutor:</label>
-        <select
-          value={character}
-          onChange={(e) => setCharacter(e.target.value)}
-          className="border p-2 rounded-md"
-        >
-          <option value="robot">Robot 🤖</option>
-          <option value="dinosaur">Dinosaur 🦖</option>
-          <option value="wizard">Wizard 🧙‍♂️</option>
-        </select>
+      {/* Change Character Button */}
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className="mb-4 flex items-center gap-2 bg-gray-200 px-3 py-2 rounded-md shadow hover:bg-gray-300"
+      >
         {characterIcons[character]}
-      </div>
+        <span>Change AI Character</span>
+      </button>
 
-      {/* Chat Messages */}
+      {/* Chat Box */}
       <div className="bg-white p-4 rounded-lg h-60 overflow-y-auto border border-gray-300">
         {messages.map((msg, index) => (
           <div
@@ -64,14 +60,24 @@ const TutorChat = () => {
               msg.role === "user" ? "justify-end" : "justify-start"
             }`}
           >
+            {/* Show AI character icon for AI messages */}
             {msg.role === "ai" && characterIcons[character]}
+
+            {/* Message Content */}
             <p
-              className={`p-2 rounded-lg text-white ${
-                msg.role === "user" ? "bg-blue-500" : "bg-green-500"
+              className={`p-2 rounded-lg text-white max-w-[70%] ${
+                msg.role === "user"
+                  ? "bg-blue-500 self-end"
+                  : "bg-green-500 self-start"
               }`}
             >
               {msg.content}
             </p>
+
+            {/* Show user icon (optional) */}
+            {msg.role === "user" && (
+              <span className="text-gray-500 text-2xl">👤</span>
+            )}
           </div>
         ))}
       </div>
@@ -95,6 +101,37 @@ const TutorChat = () => {
           Send
         </button>
       </div>
+
+      {/* Character Selection Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h2 className="text-lg font-semibold mb-4">Choose Your AI Tutor</h2>
+            <div className="flex justify-between">
+              {Object.keys(characterIcons).map((char) => (
+                <button
+                  key={char}
+                  className={`p-3 rounded-lg ${
+                    character === char ? "bg-gray-300" : "hover:bg-gray-200"
+                  }`}
+                  onClick={() => {
+                    setCharacter(char);
+                    setIsModalOpen(false);
+                  }}
+                >
+                  {characterIcons[char]}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="mt-4 w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
