@@ -25,10 +25,13 @@ const TutorChat = () => {
     setError(null);
 
     try {
-      const response = await axios.post("http://localhost:3000/api/chat", {
-        message: input,
-        character,
-      });
+      const response = await axios.post(
+        "https://ai-powered-python-tutor-3.onrender.com",
+        {
+          message: input,
+          character,
+        }
+      );
 
       const aiMessage = { role: "ai", content: response.data.response };
       setMessages((prevMessages) => [...prevMessages, aiMessage]);

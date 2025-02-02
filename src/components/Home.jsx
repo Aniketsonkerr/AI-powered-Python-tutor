@@ -25,7 +25,7 @@ function Home() {
   };
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center bg-gray-100">
+    <div className=" h-screen flex flex-col justify-center items-center bg-gray-100 ">
       <h1 className="text-4xl font-bold mb-6 text-gray-800">
         Welcome to AI Tutor
       </h1>
